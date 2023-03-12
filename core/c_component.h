@@ -38,7 +38,7 @@ namespace Cim {
 // Interface Component class (Gates & Device & Simulation)
 class Component {
  public:
-  virtual ~Component() = default;
+  virtual ~Component() { /* DN */ };
   
   // initialize components to initial state
   virtual void Initialize() = 0;
