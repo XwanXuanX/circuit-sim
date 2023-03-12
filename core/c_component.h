@@ -56,6 +56,18 @@ class Component {
   // return true if component is a device
   virtual bool IsDevice() noexcept = 0;
 
+  // return the pointer to parent device
+  virtual const Component* const GetParentDevice() noexcept = 0;
+
+  // return local index
+  virtual uint32_t GetLocalIndex() noexcept = 0;
+
+  // set local index
+  virtual void SetLocalIndex(const uint32_t new_idx) noexcept = 0;
+
+  // get inpins and outpins number
+  virtual std::pair<uint32_t, uint32_t> GetIONum() noexcept = 0;
+
   // return component name
   virtual std::string GetName() noexcept = 0;
 
