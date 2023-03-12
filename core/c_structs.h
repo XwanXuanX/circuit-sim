@@ -34,6 +34,7 @@ namespace Cim {
 
 // forward declaration of classes
 class Component;
+class Gate;
 
 // define data structures
 struct Pin {
