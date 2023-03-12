@@ -34,9 +34,90 @@ namespace Cim {
 
 // Gate Class (Derived class from Component Interface)
 // Gate is the most basic component -> building block for other devices
-template <uint32_t IN, uint32_t OUT>
 class Gate : public Component {
  public:
+  // constructor
+  Gate(const Component* const ParentDevice, const std::string& GateName, const std::string& GateType,
+      const std::vector<std::string>& InPinNames, bool isMonitored = false);
+  
+  // initialize components to initial state
+  virtual void Initialize() override;
+
+  // Set a pin to new state
+  virtual void Set(const uint32_t pin_idx, const bool new_state) override;
+  virtual void Set(const std::string& pin_name, const bool new_state) override;
+
+  // propagate signal across the circuit
+  virtual void Propagate() override;
+
+  // return true if component is monitored
+  virtual bool IsMonitored() noexcept override;
+
+  // return true if component is a device
+  virtual bool IsDevice() noexcept override;
+
+  // return the pointer to parent device
+  virtual const Component* const GetParentDevice() noexcept override;
+
+  // return local index
+  virtual uint32_t GetLocalIndex() noexcept override;
+
+  // set local index
+  virtual void SetLocalIndex(const uint32_t new_idx) noexcept override;
+
+  // get inpins and outpins number
+  virtual std::pair<uint32_t, uint32_t> GetIONum() noexcept override;
+
+  // return component name
+  virtual std::string GetName() noexcept override;
+
+  // return component full name
+  virtual std::string GetFullName() noexcept override;
+
+  // return component type
+  virtual std::string GetType() noexcept override;
+
+  // return nesting level
+  virtual uint32_t GetNestingLvl() noexcept override;
+
+  // return pin state
+  virtual bool GetPinState(const uint32_t pin_idx) override;
+
+  // return if state changed after the last evaluation
+  virtual bool IsPinStateChanged(const uint32_t pin_idx) override;
+
+  // return pin name
+  virtual std::string GetPinName(const uint32_t pin_idx) override;
+
+  // return list of input pins
+  virtual const std::vector<Pin>& GetInPins() override;
+
+  // return list of output pins
+  virtual const std::vector<Pin>& GetOutPins() override;
+
+  // return the pin's direction
+  virtual Pin::Dir GetPinDirection(const uint32_t pin_idx) override;
+  virtual Pin::Dir GetPinDirection(const std::string& pin_name) override;
+
+  // return pin index
+  virtual uint32_t GetPinIndex(const std::string& pin_name) override;
+
+  // return & modify the connection of that pin
+  virtual std::pair<Component*, uint32_t>& GetPinConnection(const uint32_t pin_idx) override;
+  virtual std::pair<Component*, uint32_t>& GetPinConnection(const std::string& pin_name) override;
+
+  // return whether a pin exist
+  virtual bool DoesPinExist(const std::string& pin_name) override;
+
+  // check if pin is connected
+  virtual bool IsPinConnected(const uint32_t pin_idx) override;
+  virtual bool IsPinConnected(const std::string& pin_name) override;
+
+  // print input pins' states
+  virtual void PrintInPinStates() noexcept override;
+
+  // print output pins' states
+  virtual void PrintOutPinStates() noexcept override;
 
  private:
   // IDs
@@ -51,10 +132,8 @@ class Gate : public Component {
   uint32_t nesting_lvl; // level of nesting
 
   // I/O
-  const uint32_t InPinsNum = IN;    // number of input pins
-  const uint32_t OutPinsNum = OUT;  // number of output pins
   std::vector<Pin> InPins;          // input pin list
-  std::vector<Pin> OutPins;         // output pin list
+  Pin              OutPin;          // 1 output per gate
 };
 
 }
