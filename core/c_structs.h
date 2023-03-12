@@ -53,12 +53,14 @@ struct Pin {
   std::pair<Component*, uint32_t> connection;
 
   // default constructor of Pin struct
-  Pin() :
-    index{UINT32_MAX},
+  inline Pin() :
+    name{},
+    index{UINT32_MAX}, 
     state{false},
+    state_changed{false},
     connection{std::make_pair<Component*, uint32_t>(nullptr, UINT32_MAX)} {
       /* DN */
-    }
+  }
 };
 
 }
