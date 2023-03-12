@@ -53,12 +53,13 @@ struct Pin {
   // Pin -> which component's which pin index?
   std::pair<Component*, uint32_t> connection;
 
-  // default constructor of Pin struct
-  inline Pin() :
-    name{},
-    index{UINT32_MAX}, 
+  // constructor of Pin struct
+  inline Pin(const std::string& pin_name, const uint32_t pin_idx, Dir pin_dir) :
+    name{pin_name},
+    index{pin_idx}, 
     state{false},
     state_changed{false},
+    direction{pin_dir},
     connection{std::make_pair<Component*, uint32_t>(nullptr, UINT32_MAX)} {
       /* DN */
   }
