@@ -77,6 +77,9 @@ class Component {
   // return component type
   virtual std::string GetType() noexcept = 0;
 
+  // return nesting level
+  virtual uint32_t GetNestingLvl() noexcept = 0;
+
   // return pin state
   virtual bool GetPinState(const uint32_t pin_idx) = 0;
 
