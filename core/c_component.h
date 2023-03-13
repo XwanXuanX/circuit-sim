@@ -43,81 +43,81 @@ class Component {
   // initialize components to initial state
   virtual void Initialize() = 0;
 
-  // Set a pin to new state
+  // Set a pin to new state and update the state_changed flag
   virtual void Set(const uint32_t pin_idx, const bool new_state) = 0;
   virtual void Set(const std::string& pin_name, const bool new_state) = 0;
 
-  // propagate signal across the circuit
-  virtual void Propagate() = 0;
+  // // propagate signal across the circuit
+  // virtual void Propagate() = 0;
 
   // return true if component is monitored
-  virtual bool IsMonitored() noexcept = 0;
+  virtual bool IsMonitored() const noexcept = 0;
 
   // return true if component is a device
-  virtual bool IsDevice() noexcept = 0;
+  virtual bool IsDevice() const noexcept = 0;
 
   // return the pointer to parent device
-  virtual const Component* const GetParentDevice() noexcept = 0;
+  virtual const Component* const GetParentDevice() const noexcept = 0;
 
   // return local index
-  virtual uint32_t GetLocalIndex() noexcept = 0;
+  virtual uint32_t GetLocalIndex() const noexcept = 0;
 
   // set local index
   virtual void SetLocalIndex(const uint32_t new_idx) noexcept = 0;
 
   // get inpins and outpins number
-  virtual std::pair<uint32_t, uint32_t> GetIONum() noexcept = 0;
+  virtual std::pair<uint32_t, uint32_t> GetIONum() const noexcept = 0;
 
   // return component name
-  virtual std::string GetName() noexcept = 0;
+  virtual std::string GetName() const noexcept = 0;
 
   // return component full name
-  virtual std::string GetFullName() noexcept = 0;
+  virtual std::string GetFullName() const noexcept = 0;
 
   // return component type
-  virtual std::string GetType() noexcept = 0;
+  virtual std::string GetType() const noexcept = 0;
 
   // return nesting level
-  virtual uint32_t GetNestingLvl() noexcept = 0;
+  virtual uint32_t GetNestingLvl() const noexcept = 0;
 
   // return pin state
-  virtual bool GetPinState(const uint32_t pin_idx) = 0;
+  virtual bool GetPinState(const uint32_t pin_idx) const = 0;
 
   // return if state changed after the last evaluation
-  virtual bool IsPinStateChanged(const uint32_t pin_idx) = 0;
+  virtual bool IsPinStateChanged(const uint32_t pin_idx) const = 0;
 
   // return pin name
-  virtual std::string GetPinName(const uint32_t pin_idx) = 0;
+  virtual std::string GetPinName(const uint32_t pin_idx) const = 0;
 
   // return list of input pins
-  virtual const std::vector<Pin>& GetInPins() = 0;
+  virtual const std::vector<Pin> GetInPins() const = 0;
 
   // return list of output pins
-  virtual const std::vector<Pin>& GetOutPins() = 0;
+  virtual const std::vector<Pin> GetOutPins() const = 0;
 
   // return the pin's direction
-  virtual Pin::Dir GetPinDirection(const uint32_t pin_idx) = 0;
-  virtual Pin::Dir GetPinDirection(const std::string& pin_name) = 0;
+  virtual Pin::Dir GetPinDirection(const uint32_t pin_idx) const = 0;
+  virtual Pin::Dir GetPinDirection(const std::string& pin_name) const = 0;
 
   // return pin index
-  virtual uint32_t GetPinIndex(const std::string& pin_name) = 0;
+  virtual uint32_t GetPinIndex(const std::string& pin_name) const = 0;
 
   // return & modify the connection of that pin
   virtual std::pair<Component*, uint32_t>& GetPinConnection(const uint32_t pin_idx) = 0;
   virtual std::pair<Component*, uint32_t>& GetPinConnection(const std::string& pin_name) = 0;
 
   // return whether a pin exist
-  virtual bool DoesPinExist(const std::string& pin_name) = 0;
+  virtual bool DoesPinExist(const std::string& pin_name) const = 0;
 
   // check if pin is connected
-  virtual bool IsPinConnected(const uint32_t pin_idx) = 0;
-  virtual bool IsPinConnected(const std::string& pin_name) = 0;
+  virtual bool IsPinConnected(const uint32_t pin_idx) const = 0;
+  virtual bool IsPinConnected(const std::string& pin_name) const = 0;
 
   // print input pins' states
-  virtual void PrintInPinStates() noexcept = 0;
+  virtual void PrintInPinStates() const noexcept = 0;
 
   // print output pins' states
-  virtual void PrintOutPinStates() noexcept = 0;
+  virtual void PrintOutPinStates() const noexcept = 0;
 };
 
 }
