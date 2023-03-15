@@ -126,6 +126,15 @@ class Gate : public Component {
   // search for a pin by name
   Pin* const search(const std::string& pin_name) const;
 
+  // evaluation of each type of gate
+  static bool AND(const std::vector<Pin>& pins);    // AND
+  static bool OR(const std::vector<Pin>& pins);     // OR
+  static bool XOR(const std::vector<Pin>& pins);    // XOR
+  static bool NOT(const std::vector<Pin>& pins);    // NOT
+  static bool NAND(const std::vector<Pin>& pins);   // NAND
+  static bool NOR(const std::vector<Pin>& pins);    // NOR
+  static bool XNOR(const std::vector<Pin>& pins);   // XNOR
+
  private:
   // IDs
   std::string name;     // gate name
