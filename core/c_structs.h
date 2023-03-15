@@ -28,6 +28,8 @@
 #include <string>   // std::string
 #include <cstdint>  // standard int types
 #include <utility>  // std::pair
+#include <vector>   // std::vector
+#include <cassert>  // assert()
 
 // namespace for entire project
 namespace Cim {
@@ -44,6 +46,9 @@ struct Pin {
     Output
   };
 
+  // link is the connection of one pin to any other pin
+  typedef std::pair<Component*, uint32_t> Link;
+
   std::string   name;           // name of the pin
   uint32_t      index;          // local index of pin in device
   bool          state;          // the CURRENT state of pin
@@ -51,8 +56,9 @@ struct Pin {
   Dir           direction;      // IN / OUT
 
   // Pin -> which component's which pin index?
-  std::pair<Component*, uint32_t> connection;
-
+  // take into consideration for multiple input connect to one output and vice versa
+  std::vector<Link> connections;
+  
   // constructor of Pin struct
   inline Pin(const std::string& pin_name, const uint32_t pin_idx, Dir pin_dir) :
     name{pin_name},
@@ -60,8 +66,10 @@ struct Pin {
     state{false},
     state_changed{false},
     direction{pin_dir},
-    connection{std::make_pair<Component*, uint32_t>(nullptr, UINT32_MAX)} {
-      /* DN */
+    connections(1) {
+    // default initialize the size of connections is one
+    assert(connections.size() == 1 && "ERR: SIZE RESERVED FAILED! \n");
+    connections.at(0) = std::make_pair<Component*, uint32_t>(nullptr, UINT32_MAX);
   }
 };
 
