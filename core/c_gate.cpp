@@ -72,7 +72,14 @@ Gate::Gate(const Component* const ParentDevice, const std::string& GateName, con
 
 // initialize components to initial state
 void Gate::Initialize() {
-  // Methodology: 
+  // Methodology: 3 cases -
+  //  - input of the component connected to parent component's input pin      -> treat as 1
+  //  - input of the component is not connected (dangling connection)         -> treat as 0
+  //  - input of component is connected to other component in the same device -> fetch the state of that pin
+  // Assume all inputs are zero
+
+  
+
 }
 
 
@@ -158,12 +165,20 @@ uint32_t Gate::GetPinIndex(const std::string& pin_name) const {
 
 // check if pin is connected
 bool Gate::IsPinConnected(const uint32_t pin_idx) const {
-  const auto& connection = this->Pins.at(pin_idx).connection;
-  // sanity check
-  assert(((connection.first == nullptr && connection.second == UINT32_MAX) || 
-         (connection.first != nullptr && connection.second != UINT32_MAX)) &&
-         "ERR: CONNECTION.FIRST AND CONNECTION.SECOND NOT CONSISTENT! \n");
-  return connection.first != nullptr;
+  const auto& connections = this->Pins.at(pin_idx).connections;
+  // might be multiple connections, check all
+  bool is_connected = false;
+  for (const auto& each_connection : connections) {
+    // sanity check
+    assert(((each_connection.first == nullptr && each_connection.second == UINT32_MAX) || 
+            (each_connection.first != nullptr && each_connection.second != UINT32_MAX)) &&
+            "ERR: CONNECTION.FIRST AND CONNECTION.SECOND NOT CONSISTENT! \n");
+    if (each_connection.first != nullptr) {
+      is_connected = true;
+      break;
+    }
+  }
+  return is_connected;
 }
 
 // check if pin is connected
@@ -173,26 +188,33 @@ bool Gate::IsPinConnected(const std::string& pin_name) const {
     throw std::invalid_argument("ERR: PIN DOES NOT EXIST! \n");
     return false;
   }
-  auto connection = pin->connection;
-  // sanity check
-  assert(((connection.first == nullptr && connection.second == UINT32_MAX) || 
-         (connection.first != nullptr && connection.second != UINT32_MAX)) &&
-         "ERR: CONNECTION.FIRST AND CONNECTION.SECOND NOT CONSISTENT! \n");
-  return connection.first != nullptr;
+  const auto& connections = pin->connections;
+  bool is_connected = false;
+  for (const auto& each_connection : connections) {
+    // sanity check
+    assert(((each_connection.first == nullptr && each_connection.second == UINT32_MAX) || 
+            (each_connection.first != nullptr && each_connection.second != UINT32_MAX)) &&
+            "ERR: CONNECTION.FIRST AND CONNECTION.SECOND NOT CONSISTENT! \n");
+    if (each_connection.first != nullptr) {
+      is_connected = true;
+      break;
+    }
+  }
+  return is_connected;
 }
 
 // return & modify the connection of that pin
-std::pair<Component*, uint32_t>& Gate::GetPinConnection(const uint32_t pin_idx) {
-  return this->Pins.at(pin_idx).connection;
+std::vector<Pin::Link>& Gate::GetPinConnection(const uint32_t pin_idx) {
+  return this->Pins.at(pin_idx).connections;
 }
 
 // return & modify the connection of that pin
-std::pair<Component*, uint32_t>& Gate::GetPinConnection(const std::string& pin_name) {
+std::vector<Pin::Link>& Gate::GetPinConnection(const std::string& pin_name) {
   Pin* const pin = search(pin_name);
   if (pin == nullptr) {
     throw std::invalid_argument("ERR: PIN DOES NOT EXIST! \n");
   }
-  return pin->connection;
+  return pin->connections;
 }
 
 // return the pin's direction
@@ -303,3 +325,75 @@ void Gate::Set(const std::string& pin_name, const bool new_state) {
   }
   pin->state = new_state;
 }
+
+// evaluation of each type of gate
+bool Gate::AND(const std::vector<Pin>& pins) {
+  int assert_counter = 0;
+  bool output = true;
+  for (const Pin& each_pin : pins) {
+    if (each_pin.direction == Pin::Dir::Input) {
+      output &= each_pin.state;
+      assert_counter++;
+    }
+  }
+  assert(assert_counter == pins.size() - 1);
+  return output;
+} // AND
+
+bool Gate::OR(const std::vector<Pin>& pins) {
+  int assert_counter = 0;
+  bool output = false;
+  for (const Pin& each_pin : pins) {
+    if (each_pin.direction == Pin::Dir::Input) {
+      output |= each_pin.state;
+      assert_counter++;
+    }
+  }
+  assert(assert_counter == pins.size() - 1);
+  return output;
+} // OR
+
+bool Gate::NOT(const std::vector<Pin>& pins) {
+  int assert_counter = 0;
+  bool output = false;
+  for (const Pin& each_pin : pins) {
+    if (each_pin.direction == Pin::Dir::Input) {
+      output = !each_pin.state;
+      assert_counter++;
+    }
+  }
+  assert(assert_counter == 1 && pins.size() == 2);
+  return output;
+} // NOT
+
+bool Gate::NAND(const std::vector<Pin>& pins) {
+  return !AND(pins);
+} // NAND
+
+bool Gate::NOR(const std::vector<Pin>& pins) {
+  return !OR(pins);
+} // NOR
+
+// Special Note for XOR:
+// For 3 or more inputs, the XOR gate has a value of 1, when there is an odd number of
+// 1's in the inputs, otherwise, it is a 0.
+// This also applies when there are only two inputs.
+bool Gate::XOR(const std::vector<Pin>& pins) {
+  int input_counter = 0;
+  int num_of_1 = 0;
+  for (const Pin& each_pin : pins) {
+    if (each_pin.direction != Pin::Dir::Input) {
+      continue;
+    }
+    input_counter++;
+    if (each_pin.state == true) {
+      num_of_1++;
+    }
+  }
+  assert(input_counter == pins.size() - 1);
+  return (num_of_1 % 2 != 0) ? true : false;
+} // XOR
+
+bool Gate::XNOR(const std::vector<Pin>& pins) {
+  return !XOR(pins);
+} // XNOR
