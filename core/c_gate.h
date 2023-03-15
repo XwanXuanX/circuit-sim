@@ -106,8 +106,8 @@ class Gate : public Component {
   virtual uint32_t GetPinIndex(const std::string& pin_name) const override;
 
   // return & modify the connection of that pin
-  virtual std::pair<Component*, uint32_t>& GetPinConnection(const uint32_t pin_idx) override;
-  virtual std::pair<Component*, uint32_t>& GetPinConnection(const std::string& pin_name) override;
+  virtual std::vector<Pin::Link>& GetPinConnection(const uint32_t pin_idx) override;
+  virtual std::vector<Pin::Link>& GetPinConnection(const std::string& pin_name) override;
 
   // return whether a pin exist
   virtual bool DoesPinExist(const std::string& pin_name) const override;
